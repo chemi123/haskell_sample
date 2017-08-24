@@ -15,6 +15,24 @@ charName 'b' = "Broseph"
 charName 'c' = "Cecil"  
 -- 'a', 'b', 'c'以外を引数に取るとエラー
 
+-- caseを使ってcharNameを別表現する
+charName2 :: Char -> String
+charName2 c = case c of 'a' -> "Albert"
+                        'b' -> "Broseph"
+                        'c' -> "Cecil"
+
+describeList :: [a] -> String
+describeList xs = "The list is " ++ case xs of [] -> "empty."
+                                               [x] -> "singleton list."
+                                               xs -> "a longer list."
+
+-- whereで定義
+describeList2 :: [a] -> String
+describeList2 xs = "The list is " ++ what xs
+    where what [] = "empty."
+          what [x] = "singleton list."
+          what xs = "a longer list."
+
 factorial :: Int -> Int
 factorial 0 = 1
 factorial n = n * factorial (n - 1)
@@ -99,6 +117,8 @@ initials :: String -> String -> String
 initials firstname lastname = [f] ++ ". " ++ [l] ++ "."
     where (f:_) = firstname
           (l:_) = lastname
+-- let句を使った場合のワンライナー
+-- initials firstname lastname = let (f:_) = firstname; (l:_) = lastname in [f] ++ ". " ++ [l] ++ "." 
 
 -- where句で関数を定義
 -- 型もしっかり定義できる
@@ -106,3 +126,19 @@ calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi w h | (w, h) <- xs]
     where bmi :: (RealFloat a) => a -> a -> a
           bmi weight height = weight / height ^ 2
+
+-- letとリストを組み合わせるとよりシンプルにかける　
+-- where句の方が読みやすい。letの方が可読性は落ちるがシンプル
+calcBmis2 :: (RealFloat a) => [(a, a)] -> [a]
+calcBmis2 xs = [let bmi w h = w / h ^ 2 in bmi w h | (w, h) <- xs]
+
+-- 以下の書き方も可能。条件も与えられる
+calcBmis3 :: (RealFloat a) => [(a, a)] -> [a]
+calcBmis3 xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2, bmi >= 25.0]
+
+-- let句の利用
+cylinder :: (RealFloat a) => a -> a -> a
+cylinder h r =
+    let sideArea = 2 * pi * r * h
+        topArea = pi * r ^2
+    in sideArea + topArea * 2
