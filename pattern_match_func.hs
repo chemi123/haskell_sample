@@ -1,7 +1,6 @@
--- ghciで確認する用のもの
--- パターンマッチの関数を色々試している
+-- Samples for pattern match
 
--- これはパターンマッチではないが一応型を意識してみたかった
+-- This is not pattern match though...
 boomBang :: (Integral a) => [a] -> [String]
 boomBang xs = [if x < 10 then "BOOM!" else "BANG!" | x <- xs, odd x]
 
@@ -9,13 +8,13 @@ lucky :: Integral a => a -> String
 lucky 7 = "LUCKY NUMBER SEVEN!"
 lucky x = "Sorry, you're out of luck, pal!"   
 
+-- Only takes parameter 'a', 'b', 'c', otherwise it causes an error
 charName :: Char -> String  
 charName 'a' = "Albert"  
 charName 'b' = "Broseph"  
 charName 'c' = "Cecil"  
--- 'a', 'b', 'c'以外を引数に取るとエラー
 
--- caseを使ってcharNameを別表現する
+-- Define charName with case 
 charName2 :: Char -> String
 charName2 c = case c of 'a' -> "Albert"
                         'b' -> "Broseph"
@@ -26,7 +25,7 @@ describeList xs = "The list is " ++ case xs of [] -> "empty."
                                                [x] -> "singleton list."
                                                xs -> "a longer list."
 
--- whereで定義
+-- Define with where
 describeList2 :: [a] -> String
 describeList2 xs = "The list is " ++ what xs
     where what [] = "empty."
@@ -56,8 +55,7 @@ head' [] = error "head' can't take empty list"
 head' (x:_) = x
 
 -- Note:
--- (x:xs)と表現されている場合はxはheadでxsはtailを表す
--- 少しややこしいので注意
+-- If defined as (x:xs), it means x is a head and xs is a tail
 tell :: (Show a) => [a] -> String
 tell [] = "The list is empty"
 tell (x:[]) = "The list has one element: " ++ show x
@@ -66,18 +64,15 @@ tell (x:y:_) = "The list is long. The first two elements are: " ++ show x ++ " a
 
 -- length' :: [a] -> Int  // OK
 -- length' :: [a] -> Num  // NG
--- typeclassの場合はaのように何か変数的なもので表現しないとダメっぽい
 length' :: (Num b) => [a] -> b
 length' [] = 0
 length' (_:x) = 1 + length' x
 
--- Note:
--- 何度も補足する場xはheadでxsはtailとなる
 sum' :: (Num a) => [a] -> a
 sum' [] = 0
 sum' (x:xs) = x + sum' xs
 
--- xs@(x:y:ys)と定義するとxsだけでx:y:ysと同等の表現ができる
+-- If you define xs@(x:xs), xs means x:xs
 capital :: String -> String
 capital "" = "Empty String"
 capital all@(x:xs) = "The first letter of " ++ all ++ "is " ++ [x] ++ " and the rest is " ++ xs
@@ -104,39 +99,36 @@ max' a b
     | a > b = a
     | otherwise = b
 
--- 型クラスOrderingを満たすを型変数はGT, EQ, LTなど
--- 今の所なんのことかよくわかってない
 myCompare :: (Ord a) => a -> a -> Ordering
 a `myCompare` b
     | a > b = GT
     | a == b = EQ
     | otherwise = LT
 
--- where句でString引数のheadを定義
 initials :: String -> String -> String
 initials firstname lastname = [f] ++ ". " ++ [l] ++ "."
     where (f:_) = firstname
           (l:_) = lastname
--- let句を使った場合のワンライナー
+-- initials also can be described as below. One liner with let
 -- initials firstname lastname = let (f:_) = firstname; (l:_) = lastname in [f] ++ ". " ++ [l] ++ "." 
 
--- where句で関数を定義
--- 型もしっかり定義できる
+-- Define with where
+-- You can define with type in where
 calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi w h | (w, h) <- xs]
     where bmi :: (RealFloat a) => a -> a -> a
           bmi weight height = weight / height ^ 2
 
--- letとリストを組み合わせるとよりシンプルにかける　
--- where句の方が読みやすい。letの方が可読性は落ちるがシンプル
+-- It gets simpler if you combine let with list
+-- It's a matter of fact which you find it simpler, where or let
 calcBmis2 :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis2 xs = [let bmi w h = w / h ^ 2 in bmi w h | (w, h) <- xs]
 
--- 以下の書き方も可能。条件も与えられる
+-- You can also give some contditions
 calcBmis3 :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis3 xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2, bmi >= 25.0]
 
--- let句の利用
+-- Use let
 cylinder :: (RealFloat a) => a -> a -> a
 cylinder h r =
     let sideArea = 2 * pi * r * h
