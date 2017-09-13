@@ -1,3 +1,5 @@
+import qualified Data.Map as Map
+
 -- So verbose way to define type constructor which brings you a headache
 data Person' = Person' String String Int Float String String deriving (Show)
 
@@ -67,7 +69,7 @@ baseRect = Rectangle (Pt 0 0)
 data Day = Monday | Tuesday | Wednesday | Thursdasy | Friday | Saturday | Sunday
            deriving (Eq, Ord, Show, Read, Bounded, Enum)
 
--- Type synonyms, which gives another name for any type
+-- Type synonyms, which gives another name to any type
 type PhoneNumber = String
 type Name = String
 type PhoneBook = [(Name, PhoneNumber)]
@@ -77,3 +79,36 @@ phoneBook = [("hoge", "0000"), ("piyo", "1111"), ("fuga", "2222")]
 
 inPhoneBook :: Name -> PhoneNumber -> PhoneBook -> Bool
 inPhoneBook name pnumber pbook = (name, pnumber) `elem` pbook
+
+type AssocList k v = [(k, v)]
+
+assocList :: AssocList k v -> AssocList k v
+assocList kv = kv
+
+-- just for practice
+-- data Either a b = Left a | Right b deriving (Eq, Ord, Show, Read)
+
+maybeA :: Maybe a -> Maybe a
+maybeA a = a
+
+-- Either sample
+data LockerState = Taken | Free deriving(Show, Eq)
+
+type Code = String
+type LockerMap = Map.Map Int (LockerState, Code)
+
+lockers :: LockerMap
+lockers = Map.fromList [(100, (Taken, "ZD391")),
+                        (101, (Free, "JAH3I")),
+                        (103, (Free, "IQSA9")),
+                        (105, (Free, "QOTSA")),
+                        (109, (Taken, "893JJ")),
+                        (110, (Taken, "99292"))
+                       ]
+
+lockerLookup :: Int -> LockerMap -> Either String Code
+lockerLookup lockerNumber map = case Map.lookup lockerNumber map of
+    Nothing -> Left $ "Locker " ++ show lockerNumber ++ " does not exist!"
+    Just (state, code) -> if state /= Taken
+                            then Right code
+                            else Left $ "Locker " ++ show lockerNumber ++ " is already taken!!"
