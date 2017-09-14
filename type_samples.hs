@@ -91,7 +91,7 @@ assocList kv = kv
 maybeA :: Maybe a -> Maybe a
 maybeA a = a
 
--- Either sample
+-- Either sample start --
 data LockerState = Taken | Free deriving(Show, Eq)
 
 type Code = String
@@ -108,7 +108,8 @@ lockers = Map.fromList [(100, (Taken, "ZD391")),
 
 lockerLookup :: Int -> LockerMap -> Either String Code
 lockerLookup lockerNumber map = case Map.lookup lockerNumber map of
-    Nothing -> Left $ "Locker " ++ show lockerNumber ++ " does not exist!"
+    Nothing -> Left $ "The locker " ++ show lockerNumber ++ " does not exist!"
     Just (state, code) -> if state /= Taken
-                            then Right code
-                            else Left $ "Locker " ++ show lockerNumber ++ " is already taken!!"
+                          then Right code
+                          else Left $ "The locker" ++ show lockerNumber ++ " is already taken!"
+-- Either sample end --
