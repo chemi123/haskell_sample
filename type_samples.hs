@@ -113,3 +113,62 @@ lockerLookup lockerNumber map = case Map.lookup lockerNumber map of
                           then Right code
                           else Left $ "The locker" ++ show lockerNumber ++ " is already taken!"
 -- Either sample end --
+
+-- recurisive data structure samples --
+infixr 5 :-
+data List a = Empty | a :- (List a) deriving (Show)
+
+data List' a = Empty' | Cons a (List' a) deriving (Show)
+
+-- recurisive data structure ends --
+
+-- type class samples --
+data TrafficLight = Red | Yellow | Green
+
+instance Eq TrafficLight where
+    Red == Red = True
+    Yellow == Yellow = True
+    Green == Green = True
+    _ == _ = False
+
+instance Show TrafficLight where
+    show Red = "Red light"
+    show Yellow = "Yellow light"
+    show Green = "Green light"
+
+class YesNo a where
+    yesno :: a -> Bool
+
+instance YesNo Int where
+    yesno 0 = False
+    yesno _ = True
+
+instance YesNo [a] where
+    yesno [] = False
+    yesno _ = True
+
+instance YesNo Bool where
+    yesno = id
+
+instance YesNo (Maybe a) where
+    yesno Nothing = False
+    yesno (Just _) = True
+
+instance YesNo TrafficLight where
+    yesno Red = False
+    yesno _ = True
+
+instance YesNo (List a) where
+    yesno Empty = False
+    yesno _ = True
+
+instance YesNo (List' a) where
+    yesno Empty' = False
+    yesno _ = True
+
+yesnoIf :: (YesNo y) => y -> a -> a -> a
+yesnoIf yesnoVal yesResult noResult =
+    if yesno yesnoVal
+    then yesResult
+    else noResult
+-- type class samples ends --
