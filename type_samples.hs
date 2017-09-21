@@ -22,6 +22,34 @@ data Person' = Person' String String Int Float String String deriving (Show)
 -- flavor (Person _ _ _ _ _ flavor) = flavor
 
 -- record syntax
+
+data BinaryTree a = EmptyTree | Node a (BinaryTree a) (BinaryTree a) deriving (Show)
+
+instance YesNo (BinaryTree a) where
+    yesno EmptyTree = False
+    yesno _ = True
+
+instance Functor BinaryTree where
+    fmap _ EmptyTree = EmptyTree
+    fmap f (Node x left right)
+        = Node (f x) (fmap f left) (fmap f right)
+
+singleton :: a -> BinaryTree a
+singleton x = Node x EmptyTree EmptyTree
+
+insertTree :: (Ord a) => a -> BinaryTree a -> BinaryTree a
+insertTree x EmptyTree = singleton x
+insertTree x (Node a left right)
+    | x == a = Node a left right
+    | x < a  = Node a (insertTree x left) right
+    | x > a  = Node a left (insertTree x right)
+
+elemTree :: (Ord a) => a -> BinaryTree a -> Bool
+elemTree x (Node a left right)
+    | x == a = True
+    | x < a  = elemTree x left
+    | x > a  = elemTree x right
+
 data Person = Person { firstName :: String,
                        lastName :: String,
                        age :: Int
@@ -107,11 +135,12 @@ lockers = Map.fromList [(100, (Taken, "ZD391")),
                        ]
 
 lockerLookup :: Int -> LockerMap -> Either String Code
-lockerLookup lockerNumber map = case Map.lookup lockerNumber map of
-    Nothing -> Left $ "The locker " ++ show lockerNumber ++ " does not exist!"
+lockerLookup number map = case Map.lookup number map of
+    Nothing -> Left $ "The locker " ++ show number ++ " does not exist!"
     Just (state, code) -> if state /= Taken
                           then Right code
-                          else Left $ "The locker" ++ show lockerNumber ++ " is already taken!"
+                          else Left $ "The locker " ++ show number ++ " is already taken!"
+
 -- Either sample end --
 
 -- recurisive data structure samples --
@@ -166,9 +195,9 @@ instance YesNo (List' a) where
     yesno Empty' = False
     yesno _ = True
 
-yesnoIf :: (YesNo y) => y -> a -> a -> a
-yesnoIf yesnoVal yesResult noResult =
+yesnoIf :: (YesNo y) => y -> String
+yesnoIf yesnoVal =
     if yesno yesnoVal
-    then yesResult
-    else noResult
+    then "Yes"
+    else "No"
 -- type class samples ends --

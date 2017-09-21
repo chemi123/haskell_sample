@@ -16,3 +16,15 @@ elemTree x (Node a left right)
     | x == a = True
     | x < a  = elemTree x left
     | x > a  = elemTree x right
+
+class YesNo a where
+    yesno :: a -> Bool
+
+instance YesNo (BinaryTree a) where
+    yesno EmptyTree = False
+    yesno _ = True
+
+instance Functor BinaryTree where
+    fmap _ EmptyTree = EmptyTree
+    fmap f (Node x left right)
+        = Node (f x) (fmap f left) (fmap f right)
