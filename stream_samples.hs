@@ -4,7 +4,7 @@ import System.IO
 import Control.Exception
 
 main :: IO ()
-main = readFileSample'
+main = appendFileSample
 
 
 readEachLine :: IO ()
@@ -63,3 +63,15 @@ withFile' file mode f =
     bracket (openFile file mode) -- handler
             (\handler -> hClose handler) -- a function which closes handler
             (\handler -> f handler) -- takes handler and do something which is defined in f
+
+
+writeFileSample :: IO ()
+writeFileSample = do
+    contents <- readFile "host"
+    writeFile "host.txt" contents
+
+
+appendFileSample :: IO ()
+appendFileSample = do
+    line <- getLine
+    appendFile "host.txt" (line ++ "\n")
