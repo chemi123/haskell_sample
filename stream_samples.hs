@@ -2,11 +2,12 @@ import Control.Monad
 import Data.Char
 import System.IO
 import System.Directory
+import System.Environment
 import Data.List
 import Control.Exception
 
 main :: IO ()
-main = deleteItem
+main = commandLineArgs
 
 
 readEachLine :: IO ()
@@ -111,3 +112,15 @@ deleteItem = do
             hClose tempHandle
             removeFile "todo.txt"
             renameFile tempName "todo.txt")
+
+
+commandLineArgs :: IO ()
+commandLineArgs = do
+    args <- getArgs
+    progName <- getProgName
+
+    putStrLn "The arguments name are: "
+    mapM_ putStrLn args
+
+    putStrLn "The program name is:"
+    putStr progName
