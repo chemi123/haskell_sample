@@ -1,10 +1,12 @@
 import Control.Monad
 import Data.Char
 import System.IO
+import System.Directory
+import Data.List
 import Control.Exception
 
 main :: IO ()
-main = readFileSample''
+main = deleteItem
 
 
 readEachLine :: IO ()
@@ -82,4 +84,30 @@ writeFileSample = do
 appendFileSample :: IO ()
 appendFileSample = do
     line <- getLine
-    appendFile "host.txt" (line ++ "\n")
+    appendFile "todo.txt" (line ++ "\n")
+
+
+deleteItem :: IO ()
+deleteItem = do
+    contents <- readFile "todo.txt"
+    let todoTasks = lines contents
+        numberedTasks = zipWith (\n line -> show n ++ " - " ++ line)
+                                    [0..] todoTasks
+    putStrLn "These are your TO-DO items:"
+    mapM_ putStrLn numberedTasks
+    putStrLn "Which do you like to delete?"
+    numberString <- getLine
+
+    let number = read numberString
+        newTodoItems = unlines $ delete (todoTasks !! number) todoTasks
+
+    bracketOnError (openTempFile "." "temp")
+        (\(tempName, tempHandle) -> do
+            hClose tempHandle
+            removeFile tempName)
+
+        (\(tempName, tempHandle) -> do
+            hPutStr tempHandle newTodoItems
+            hClose tempHandle
+            removeFile "todo.txt"
+            renameFile tempName "todo.txt")
