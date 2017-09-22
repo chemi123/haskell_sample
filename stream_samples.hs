@@ -1,6 +1,7 @@
 import Control.Monad
 import Data.Char
 import System.IO
+import Control.Exception
 
 main :: IO ()
 main = readFileSample'
@@ -52,6 +53,13 @@ readFileSample = do
 
 readFileSample' :: IO ()
 readFileSample' = do
-    withFile "host" ReadMode $ \handle -> do
+    withFile' "host" ReadMode $ \handle -> do
         contents <- hGetContents handle
         putStr contents
+
+
+withFile' :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
+withFile' file mode f =
+    bracket (openFile file mode)
+            (\handler -> hClose handler)
+            (\handler -> f handler)
