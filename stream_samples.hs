@@ -60,6 +60,6 @@ readFileSample' = do
 
 withFile' :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
 withFile' file mode f =
-    bracket (openFile file mode)
-            (\handler -> hClose handler)
-            (\handler -> f handler)
+    bracket (openFile file mode) -- handler
+            (\handler -> hClose handler) -- a function which closes handler
+            (\handler -> f handler) -- takes handler and do something which is defined in f
