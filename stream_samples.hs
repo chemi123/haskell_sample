@@ -4,7 +4,7 @@ import System.IO
 import Control.Exception
 
 main :: IO ()
-main = appendFileSample
+main = readFileSample''
 
 
 readEachLine :: IO ()
@@ -58,11 +58,19 @@ readFileSample' = do
         putStr contents
 
 
+readFileSample'' :: IO ()
+readFileSample'' = do
+    contents <- readFile "host"
+    putStr contents
+
+-- takes handle closer handler
+-- bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
+
 withFile' :: FilePath -> IOMode -> (Handle -> IO a) -> IO a
-withFile' file mode f =
-    bracket (openFile file mode) -- handler
-            (\handler -> hClose handler) -- a function which closes handler
-            (\handler -> f handler) -- takes handler and do something which is defined in f
+withFile' name mode f =
+    bracket (openFile name mode)
+            (\handle -> hClose handle)
+            (\handle -> f handle)
 
 
 writeFileSample :: IO ()
