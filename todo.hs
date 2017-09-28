@@ -15,10 +15,10 @@ main :: IO ()
 main = do
     args <- getArgs
     if length args == 0
-    then showUsage
-    else do
-        let (command:argList) = args
-        dispatch command argList
+        then showUsage
+        else do
+            let (command:argList) = args
+            dispatch command argList
 
 
 showUsage :: IO ()
