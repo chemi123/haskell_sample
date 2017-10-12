@@ -20,6 +20,7 @@ elemTree x (Node a left right)
 class YesNo a where
     yesno :: a -> Bool
 
+
 instance YesNo (BinaryTree a) where
     yesno EmptyTree = False
     yesno _ = True
@@ -28,3 +29,10 @@ instance Functor BinaryTree where
     fmap _ EmptyTree = EmptyTree
     fmap f (Node x left right)
         = Node (f x) (fmap f left) (fmap f right)
+
+instance Foldable BinaryTree where
+    foldMap f EmptyTree = mempty
+    foldMap f (Node x left right) = 
+        foldMap f left `mappend`
+        f x            `mappend`
+        foldMap f right
